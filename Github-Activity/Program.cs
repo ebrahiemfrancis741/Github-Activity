@@ -1,5 +1,6 @@
 ﻿
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 class Program
 {
@@ -20,13 +21,20 @@ class Program
             if (response.IsSuccessStatusCode)
             {
                 string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
+                using JsonDocument doc = JsonDocument.Parse(responseBody);
+                foreach (JsonElement element in doc.RootElement.EnumerateArray()) {
+                    Console.WriteLine(element.GetProperty("type").GetString());
+                }
+                //Console.WriteLine(responseBody);
+
             }
             else
             {
                 Console.WriteLine("Error: {0}", response.StatusCode);
                 Console.WriteLine("Reason: {0}", response.ReasonPhrase);
             }
+
+
         }
         catch (HttpRequestException e) {
             Console.WriteLine(e.Message);

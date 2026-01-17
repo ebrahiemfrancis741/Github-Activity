@@ -22,10 +22,57 @@ class Program
             {
                 string responseBody = await response.Content.ReadAsStringAsync();
                 using JsonDocument doc = JsonDocument.Parse(responseBody);
+
                 foreach (JsonElement element in doc.RootElement.EnumerateArray()) {
-                    Console.WriteLine(element.GetProperty("type").GetString());
+                    //Console.WriteLine(element.GetProperty("payload").ToString());
+                    switch (element.GetProperty("type").GetString())
+                    {
+                        case "PushEvent":
+                            //int numberOfCommits = element.GetProperty("payload").GetProperty("commits").GetArrayLength();
+                            //string repoName = element.GetProperty("repo").GetProperty("name").ToString();
+                            Console.WriteLine("Pushed {0} commits to {1}", "numberOfCommits", "repoName");
+                            //Console.WriteLine(repoName);
+                            break;
+                        case "PullRequestEvent":
+                            Console.WriteLine("Opened a pull request in {0}", "repoName");
+                            break;
+                        case "IssuesEvent":
+                            Console.WriteLine("Opened a new issue in {0}", "repoName");
+                            break;
+                        case "IssueCommentEvent":
+                            Console.WriteLine("Commented on issue #{0} in {1}", "issueNumber", "repoName");
+                            break;
+                        case "ForkEvent":
+                            Console.WriteLine("Forked {0} to {1}", "repoName", "yourRepo");
+                            break;
+                        case "CreateEvent":
+                            Console.WriteLine("Created branch {0} in {1}", "branchName", "repoName");
+                            break;
+                        case "DeleteEvent":
+                            Console.WriteLine("Deleted branch {0} in {1}", "branchName", "repoName");
+                            break;
+                        case "GollumEvent":
+                            Console.WriteLine("Updated the Wiki page {0} in {1}", "wikiPageName", "repoName");
+                            break;
+                        case "WatchEvent":
+                            Console.WriteLine("Starred {0}", "repoName");
+                            break;
+                        case "FollowEvent":
+                            Console.WriteLine("Followed user {0}", "userName");
+                            break;
+                        case "MemberEvent":
+                            Console.WriteLine("Added user {0} as collaborator to {1}", "devName", "repoName");
+                            break;
+                        case "PublicEvent":
+                            Console.WriteLine("Made repositroy {0} public", "repoName");
+                            break;
+                        case "CommitCommentEvent":
+                            Console.WriteLine("Commented on commit {0} in {1}", "commitId", "repoName");
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                //Console.WriteLine(responseBody);
 
             }
             else

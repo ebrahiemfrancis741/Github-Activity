@@ -8,7 +8,12 @@ class Program
 
     static async Task Main(string[] args)
     {
-        string url = "https://api.github.com/users/ebrahiemfrancis741/events";
+        if (args.Length == 0)
+        {
+            Console.WriteLine("Please specify github username: example Github-Activity \"kamranahmedse\"");
+        }
+        string githubUser = args[0];
+        string url = "https://api.github.com/users/" + githubUser + "/events";
 
         try {
             // required User-Agent header
@@ -25,49 +30,52 @@ class Program
 
                 foreach (JsonElement element in doc.RootElement.EnumerateArray()) {
                     //Console.WriteLine(element.GetProperty("payload").ToString());
+                    string repoName = element.GetProperty("repo").GetProperty("name").ToString();
+                    DateTime datetime = element.GetProperty("created_at").GetDateTime();
+                    
                     switch (element.GetProperty("type").GetString())
                     {
                         case "PushEvent":
-                            //int numberOfCommits = element.GetProperty("payload").GetProperty("commits").GetArrayLength();
-                            //string repoName = element.GetProperty("repo").GetProperty("name").ToString();
-                            Console.WriteLine("Pushed {0} commits to {1}", "numberOfCommits", "repoName");
-                            //Console.WriteLine(repoName);
+                            Console.WriteLine("Pushed commits to {0} at {1}", repoName, datetime.ToString());
                             break;
                         case "PullRequestEvent":
-                            Console.WriteLine("Opened a pull request in {0}", "repoName");
+                            Console.WriteLine("Opened a pull request in {0} at {1}", repoName, datetime.ToString());
                             break;
                         case "IssuesEvent":
-                            Console.WriteLine("Opened a new issue in {0}", "repoName");
+                            Console.WriteLine("Opened a new issue in {0} at {1}", repoName, datetime.ToString());
                             break;
                         case "IssueCommentEvent":
-                            Console.WriteLine("Commented on issue #{0} in {1}", "issueNumber", "repoName");
+                            int payloadIssueNumber = element.GetProperty("payload").GetProperty("issue").GetProperty("number").GetInt32();
+                            Console.WriteLine("Commented on issue #{0} in {1} at {2}", payloadIssueNumber, repoName, datetime.ToString());
                             break;
                         case "ForkEvent":
-                            Console.WriteLine("Forked {0} to {1}", "repoName", "yourRepo");
+                            string forkee = element.GetProperty("payload").GetProperty("forkee").GetProperty("full_name").ToString();
+                            Console.WriteLine("Forked {0} to {1} at {2}", repoName, forkee, datetime.ToString());
                             break;
                         case "CreateEvent":
-                            Console.WriteLine("Created branch {0} in {1}", "branchName", "repoName");
+                            Console.WriteLine("Created new branch in {0} at {1}", repoName, datetime.ToString());
                             break;
                         case "DeleteEvent":
-                            Console.WriteLine("Deleted branch {0} in {1}", "branchName", "repoName");
+                            Console.WriteLine("Deleted branch in {0} at {1}", "repoName", datetime.ToString());
                             break;
                         case "GollumEvent":
-                            Console.WriteLine("Updated the Wiki page {0} in {1}", "wikiPageName", "repoName");
+                            Console.WriteLine("Updated the Wiki page in {0} at {1}", repoName, datetime.ToString());
                             break;
                         case "WatchEvent":
-                            Console.WriteLine("Starred {0}", "repoName");
+                            Console.WriteLine("Starred {0} at {1}", repoName, datetime.ToString());
                             break;
                         case "FollowEvent":
-                            Console.WriteLine("Followed user {0}", "userName");
+                            Console.WriteLine("Followed user {0} at {1}", "userName", datetime.ToString());
                             break;
                         case "MemberEvent":
-                            Console.WriteLine("Added user {0} as collaborator to {1}", "devName", "repoName");
+                            string memberName = element.GetProperty("payload").GetProperty("member").GetProperty("login").ToString();
+                            Console.WriteLine("Added user {0} as collaborator to {1} at {2}", memberName, repoName, datetime.ToString());
                             break;
                         case "PublicEvent":
-                            Console.WriteLine("Made repositroy {0} public", "repoName");
+                            Console.WriteLine("Made repositroy {0} public at {1}", repoName, datetime.ToString());
                             break;
                         case "CommitCommentEvent":
-                            Console.WriteLine("Commented on commit {0} in {1}", "commitId", "repoName");
+                            Console.WriteLine("Commented on commit in {0} at {1}", repoName, datetime.ToString());
                             break;
                         default:
                             break;
